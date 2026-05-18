@@ -5,6 +5,7 @@ import json, os
 import pandas as pd
 from datetime import datetime
 
+
 @task
 def consume_and_process():
     """Consume data from Kafka topic"""
@@ -13,7 +14,7 @@ def consume_and_process():
         bootstrap_servers="kafka:9092",
         auto_offset_reset="earliest",
         consumer_timeout_ms=5000,
-        value_deserializer=lambda m: json.loads(m.decode())
+        value_deserializer=lambda m: json.loads(m.decode()),
     )
     records = []
     for msg in consumer:
@@ -22,13 +23,14 @@ def consume_and_process():
     print(f"Consumed {len(records)} records from Kafka")
     return records
 
+
 @task
 def save_to_delta(records):
     """Save records to Delta Lake (parquet format)"""
     if not records:
         print("No records to save")
         return
-    
+
     df = pd.DataFrame(records)
     # Giả lập Delta Lake bằng parquet (local volume)
     path = "/opt/delta-lake/raw"
@@ -36,15 +38,26 @@ def save_to_delta(records):
     df.to_parquet(f"{path}/batch_{datetime.now().strftime('%Y%m%d_%H%M%S')}.parquet")
     print(f"Saved {len(df)} records to Delta Lake")
 
-@flow(name="Kafka to Delta Pipeline", schedule="* */5 * * *")
+
+# FIX: Remove 'schedule' from the @flow decorator
+@flow(name="Kafka to Delta Pipeline")
 def kafka_to_delta_flow():
     """Main flow: consume from Kafka and save to Delta Lake"""
     records = consume_and_process()
     save_to_delta(records)
 
 if __name__ == "__main__":
-    # Deploy flow to Prefect Orion
-    kafka_to_delta_flow.deploy(
+    from prefect.deployments import Deployment
+    from prefect.client.schemas.schedules import CronSchedule
+
+    # Using build_from_flow bypasses strict image requirements, 
+    # relying on the volume mount in docker-compose instead.
+    deployment = Deployment.build_from_flow(
+        flow=kafka_to_delta_flow,
         name="kafka-to-delta",
-        work_queue_name="lab28-worker"
+        work_pool_name="docker",
+        work_queue_name="lab28-worker",
+        schedule=CronSchedule(cron="* */5 * * *")
     )
+    deployment.apply()
+    print("Successfully deployed 'kafka-to-delta'!")
