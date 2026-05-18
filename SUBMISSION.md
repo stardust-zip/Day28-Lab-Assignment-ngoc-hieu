@@ -7,31 +7,40 @@
 ## Các Artifacts Cần Nộp
 
 ### 1. Source Code
+
 - Folder `lab28/` hoàn chỉnh với tất cả files
 - Tất cả integration scripts hoạt động
 - Prefect flows đã deploy và schedule
 
 ### 2. Screenshots Demo
+
 Chụp màn hình các bước:
+
 - Prefect UI: http://localhost:4200 (flow đang chạy)
 - API Gateway call: `curl http://localhost:8000/health`
 - Grafana dashboard: http://localhost:3000
 
 ### 3. Kết Quả Smoke Tests
+
 Chạy và chụp màn hình kết quả:
+
 ```bash
 cd lab28
 pytest smoke-tests/ -v
 ```
+
 Kỳ vọng: 5/5 tests passing
 
 ### 4. Production Readiness Score
+
 ```bash
 python scripts/production_readiness_check.py
 ```
+
 Kỳ vọng: Score >80%
 
 ### 5. Documentation
+
 - `README.md` giải thích cách:
   - Start platform: `docker compose up -d`
   - Deploy Prefect flows
@@ -41,6 +50,7 @@ Kỳ vọng: Score >80%
 ## Định Dạng Nộp Bài
 
 Tạo Repo GitHub chứa:
+
 ```
 lab28_submission_[student_id]
 ├── lab28/                    # Source code hoàn chỉnh
@@ -59,16 +69,17 @@ lab28_submission_[student_id]
 ```
 
 ## Địa Điểm Nộp
+
 Nộp link repo GitHub qua LMS
 
 ## Tiêu Chí Chấm Điểm
 
-| Tiêu Chí | Trọng Số | Mô Tả |
-|----------|----------|-------|
-| Integration Completeness | 40% | Tất cả 10 integration points hoạt động, data flow end-to-end |
-| Observability | 25% | Logs, metrics, traces hiển thị; alerts configured |
-| Performance | 20% | Latency trong SLO; load tested; không có memory leaks |
-| Architecture Quality | 15% | Clean separation, GitOps config, documented decisions |
+| Tiêu Chí                 | Trọng Số | Mô Tả                                                        |
+| ------------------------ | -------- | ------------------------------------------------------------ |
+| Integration Completeness | 40%      | Tất cả 10 integration points hoạt động, data flow end-to-end |
+| Observability            | 25%      | Logs, metrics, traces hiển thị; alerts configured            |
+| Performance              | 20%      | Latency trong SLO; load tested; không có memory leaks        |
+| Architecture Quality     | 15%      | Clean separation, GitOps config, documented decisions        |
 
 ## Các Vấn Đề Cần Tránh
 
@@ -91,4 +102,5 @@ Nộp link repo GitHub qua LMS
 5. **Nếu một service trong stack (ví dụ: Qdrant hoặc Kafka) bị crash, hệ thống của bạn sẽ xử lý như thế nào? Có graceful degradation không?**
 
 ## Câu Hỏi Thêm?
+
 Liên hệ giảng viên qua LMS hoặc office hours.
